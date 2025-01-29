@@ -1,0 +1,15 @@
+name: "Open WebUI"
+description: "Open WebUI for Home Assistant with remote Ollama support"
+version: "cache-linux-arm64-main"
+slug: "open_webui_ha"
+arch:
+  - aarch64
+startup: services
+ports:
+  3000/tcp: 8080  # Remap Home Assistant 3000 to Open WebUI 8080
+map:
+  - config:rw
+  - share
+options: {}
+schema: {}
+image: ghcr.io/open-webui/open-webui
