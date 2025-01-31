@@ -22,7 +22,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Copy our custom script into the image
-COPY run.sh /run.sh
+COPY open-webui/run.sh /run.sh
 RUN chmod a+x /run.sh
 
 # By default, expose the same port
