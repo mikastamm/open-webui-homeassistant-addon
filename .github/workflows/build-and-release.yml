@@ -1,0 +1,87 @@
+name: Build and Release OpenWebUI for Home Assistant
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_version:
+        description: "Manually specify an OpenWebUI version for testing"
+        required: false
+        default: ""
+  schedule:
+    - cron: "0 * * * *"  # Check every hour
+  push:
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Get latest OpenWebUI release (or use test version)
+        id: get_release
+        run: |
+          if [[ -n "${{ github.event.inputs.test_version }}" ]]; then
+            echo "Using manually provided test version: ${{ github.event.inputs.test_version }}"
+            LATEST_RELEASE="${{ github.event.inputs.test_version }}"
+          else
+            LATEST_RELEASE=$(curl -s https://api.github.com/repos/open-webui/open-webui/releases/latest | jq -r .tag_name)
+          fi
+          echo "LATEST_RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
+
+      - name: Check if release already exists
+        id: check_release
+        run: |
+          if gh release view "$LATEST_RELEASE" &>/dev/null; then
+            echo "Release $LATEST_RELEASE already exists. Skipping build."
+            echo "EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "EXISTS=false" >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stop execution if release exists
+        if: env.EXISTS == 'true'
+        run: exit 0
+
+      - name: Update Dockerfile with latest release version
+        run: |
+          sed -i "s|FROM ghcr.io/open-webui/open-webui:.*|FROM ghcr.io/open-webui/open-webui:$LATEST_RELEASE|" open-webui/Dockerfile
+          sed -i "s|io.hass.version=\".*\"|io.hass.version=\"$LATEST_RELEASE\"|" open-webui/Dockerfile
+
+      - name: Update config.yaml with latest release version
+        run: |
+          sed -i "s|^version: \".*\"|version: \"$LATEST_RELEASE\"|" open-webui/config.yaml
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_NAME="ghcr.io/mikastamm/open-webui-hass"
+          docker build -t $IMAGE_NAME:$LATEST_RELEASE -t $IMAGE_NAME:latest -f open-webui/Dockerfile .
+          docker push $IMAGE_NAME:$LATEST_RELEASE
+          docker push $IMAGE_NAME:latest
+
+      - name: Commit updated files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add open-webui/Dockerfile open-webui/config.yaml
+          git commit -m "Update OpenWebUI to version $LATEST_RELEASE" || echo "No changes to commit"
+          git push
+        continue-on-error: true  # Doesn't fail the workflow if there's nothing to commit
+
+      - name: Create GitHub Release
+        if: env.EXISTS == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$LATEST_RELEASE" \
+            --title "OpenWebUI Home Assistant - $LATEST_RELEASE" \
+            --notes "Automated release for OpenWebUI version $LATEST_RELEASE" \
+            open-webui/Dockerfile open-webui/config.yaml
