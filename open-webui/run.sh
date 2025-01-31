@@ -11,23 +11,7 @@ set -e
 #     openai_api_key: str?
 # then you can do:
 
-# Gather user options (with defaults)
-if bashio::config.exists 'use_cuda'; then
-    USE_CUDA01="$(bashio::config 'use_cuda')"
-else
-    USE_CUDA01="false"
-fi
-
-OPENAI_API_KEY="$(bashio::config 'openai_api_key')"
-if [ -z "$OPENAI_API_KEY" ]; then
-    OPENAI_API_KEY=""
-fi
-
-# Export them as environment variables so Python code or
-# the original Docker entrypoint can see them
-export USE_CUDA01
-export OPENAI_API_KEY
-
+USE_OLLAMA_DOCKER="true"
 # You can also override upstream environment variables:
 # e.g. export OLLAMA_BASE_URL="http://some-other-host:11434"
 

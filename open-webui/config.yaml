@@ -1,15 +1,17 @@
 name: "Open WebUI"
 description: "Open WebUI for Home Assistant with remote Ollama support"
-version: "cache-linux-arm64-main"
-slug: "open_webui_ha"
+version: "latest"
+slug: "open_webui"
 arch:
   - aarch64
 startup: services
+webui: "[PROTO:ssl]://[HOST]:[PORT:8080]"
+host_network: true
 ports:
-  3000/tcp: 8080  # Remap Home Assistant 3000 to Open WebUI 8080
+  8080/tcp: 8080
 map:
   - config:rw
   - share
 options: {}
 schema: {}
-image: ghcr.io/open-webui/open-webui
+image: ghcr.io/mikastamm/open-webui-hass
