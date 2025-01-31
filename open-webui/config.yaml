@@ -1,6 +1,6 @@
 name: "Open WebUI"
 description: "Open WebUI for Home Assistant with remote Ollama support"
-version: "latest"
+version: "v0.5.7"
 slug: "open_webui"
 arch:
   - aarch64

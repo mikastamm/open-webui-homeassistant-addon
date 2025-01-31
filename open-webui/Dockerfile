@@ -3,11 +3,11 @@
 # the necessary Home Assistant labels and a custom startup script.
 
 ARG BUILD_FROM
-FROM ghcr.io/open-webui/open-webui:latest
+FROM ghcr.io/open-webui/open-webui:v0.5.7
 
 # Labels for Home Assistant Supervisor
 LABEL \
-  io.hass.version="1.0.0" \
+  io.hass.version="v0.5.7" \
   io.hass.type="addon" \
   io.hass.arch="aarch64"
 
