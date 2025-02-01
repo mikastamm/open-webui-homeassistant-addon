@@ -24,7 +24,7 @@ http://homeassistant.local:8080
 
 ---
 
-## Example: Hosting OpenWebUI on a Subdomain with SSL
+## Example Setup: Hosting OpenWebUI on a Subdomain with SSL
 
 Hosting OpenWebUI on a subdomain allows you to secure your connection with HTTPS. In this example, we use the NGINX add-on together with the Let's Encrypt Home Assistant add-on.
 
@@ -36,7 +36,7 @@ Hosting OpenWebUI on a subdomain allows you to secure your connection with HTTPS
 
 ---
 
-### Step 1: DNS Configuration
+### DNS Configuration
 
 If your Home Assistant instance is reachable at `myhome.com` and you want to serve OpenWebUI from `chat.myhome.com`, add a CNAME DNS record for your subdomain.
 
@@ -46,7 +46,7 @@ If your Home Assistant instance is reachable at `myhome.com` and you want to ser
 
 ---
 
-### Step 2: Set Up SSL for the Subdomain
+### Set Up SSL for the Subdomain
 
 This guide assumes you already have SSL enabled for your Home Assistant domain via the Let's Encrypt add-on. To secure your subdomain:
 
@@ -67,60 +67,56 @@ This guide assumes you already have SSL enabled for your Home Assistant domain v
 
 ---
 
-### Step 3: Configure NGINX for the Subdomain
+### Configure NGINX for the Subdomain
 
 Now, configure the NGINX Home Assistant add-on so that requests to your subdomain are forwarded to OpenWebUI.
 
 1. **Enable Custom Configuration:**
-   - In the NGINX add-on settings, enable the **Customize** option by setting `active` to `true`.
-   - The `server` property (indicating where NGINX will look for configuration files) can usually remain at its default value.
+    In the NGINX add-on settings, enable the **Customize** option by setting `active` to `true`.
+    The `server` property (indicating where NGINX will look for configuration files) can usually remain at its default value.
 
    ![NGINX Settings](docs-nginx-1.png)
 
 2. **Create a Subdomain Configuration File:**
-   - On your Home Assistant system, create a directory named `nginx_proxy` if it doesn’t already exist.
-   - Create a file at the following location:
-     ```
-     /share/nginx_proxy/chat.myhome.com.conf
-     ```
+   On your Home Assistant system, create a directory named `nginx_proxy` if it doesn’t already exist.
+   Create a file at the following location:
+    ```
+    /share/nginx_proxy/chat.myhome.com.conf
+    ```
 
 3. **Add the Following Configuration:**
-
-   ***
-   # Redirect HTTP to HTTPS
-   server {
-       listen 80;
-       server_name chat.myhome.com;
-       return 301 https://$host$request_uri;
-   }
-
-   server {
-       listen 443 ssl;
-       server_name chat.myhome.com;
-
-       ssl_certificate /ssl/fullchain.pem;
-       ssl_certificate_key /ssl/privkey.pem;
-       
-       # Optional security headers
-       add_header X-Content-Type-Options nosniff;
-       add_header X-Frame-Options "SAMEORIGIN";
-       add_header Referrer-Policy "no-referrer-when-downgrade";
-
-       location / {
-           # Forward requests to your OpenWebUI instance
-           proxy_pass http://homeassistant.local:8080;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-           
-           # Enable WebSocket support
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection "upgrade";
-       }
-   }
-   ***
+```
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name chat.myhome.com;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name chat.myhome.com;
+    ssl_certificate /ssl/fullchain.pem;
+    ssl_certificate_key /ssl/privkey.pem;
+    
+    # Optional security headers
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+    location / {
+        # Forward requests to your OpenWebUI instance
+        proxy_pass http://homeassistant.local:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Enable WebSocket support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
 
    > **Tip:** If your local OpenWebUI address differs from `http://homeassistant.local:8080`, update the `proxy_pass` URL accordingly.
 
