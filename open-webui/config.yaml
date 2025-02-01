@@ -1,17 +1,35 @@
 name: "Open WebUI"
-description: "Open WebUI for Home Assistant with remote Ollama support"
+description: "Open WebUI is an extensible, feature-rich, and user-friendly self-hosted AI platform designed to operate entirely offline"
+url: https://github.com/mikastamm/open-webui-homeassistant-addon
 version: "v0.5.7"
-slug: "open_webui"
+slug: "openwebui"
+panel_icon: mdi:message
+init: false
+
 arch:
   - aarch64
+  - amd64
 startup: services
 webui: "[PROTO:ssl]://[HOST]:[PORT:8080]"
 host_network: true
 ports:
   8080/tcp: 8080
+ports_description:
+  8080/tcp: "Open WebUI Web Interface"
 map:
-  - config:rw
   - share
-options: {}
-schema: {}
+options: 
+  webui_url: "http://homeassistant.local:8080"
+  webui_secret_key: ""
+  offline_mode: false
+  admin:
+    enable_admin_export: true
+    enable_admin_chat_actions: true
+schema: 
+  webui_url: str
+  webui_secret_key: str
+  offline_mode: bool
+  admin:
+    enable_admin_export: bool
+    enable_admin_chat_actions: bool
 image: ghcr.io/mikastamm/open-webui-hass

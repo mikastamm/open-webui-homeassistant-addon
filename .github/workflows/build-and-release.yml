@@ -73,7 +73,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_NAME="ghcr.io/mikastamm/open-webui-hass"
+          IMAGE_NAME="ghcr.io/mikastamm/open-webui-homeassistant-addon"
           docker build -t $IMAGE_NAME:$LATEST_RELEASE -t $IMAGE_NAME:latest -f open-webui/Dockerfile .
           docker push $IMAGE_NAME:$LATEST_RELEASE
           docker push $IMAGE_NAME:latest
@@ -91,6 +91,5 @@ jobs:
         if: env.EXISTS == 'false'
         run: |
           gh release create "$LATEST_RELEASE" \
-            --title "OpenWebUI Home Assistant - $LATEST_RELEASE" \
-            --notes "Automated release for OpenWebUI version $LATEST_RELEASE" \
-            open-webui/Dockerfile open-webui/config.yaml
+            --title "$LATEST_RELEASE" \
+            --notes "Automated release for Open WebUI version $LATEST_RELEASE"

@@ -4,20 +4,32 @@ set -e
 # If using bashio, source it for convenience:
 . /usr/lib/bashio/bashio.lib.sh
 
-# Example: read config keys from /data/options.json
-# If your config.yaml has:
-#   schema:
-#     use_cuda: bool
-#     openai_api_key: str?
-# then you can do:
-
+# Read configuration options
 USE_OLLAMA_DOCKER="true"
-# You can also override upstream environment variables:
-# e.g. export OLLAMA_BASE_URL="http://some-other-host:11434"
+DATA_DIR=/data
+WEBUI_SECRET_KEY=$(bashio::config 'webui_secret_key')
+WEBUI_URL=$(bashio::config 'webui_url')
+ENABLE_ADMIN_EXPORT=$(bashio::config 'enable_admin_export')
+ENABLE_ADMIN_CHAT_ACCESS=$(bashio::config 'enable_admin_chat_access')
+OFFLINE_MODE=$(bashio::config 'offline_mode')
 
-bashio::log.info "Launching Open-WebUI. use_cuda=$USE_CUDA01 openai_api_key length=${#OPENAI_API_KEY}"
+# Export environment variables
+export USE_OLLAMA_DOCKER
+export DATA_DIR
+export WEBUI_SECRET_KEY
+export WEBUI_URL
+export ENABLE_ADMIN_EXPORT
+export ENABLE_ADMIN_CHAT_ACCESS
+export OFFLINE_MODE
+
+# Log the configurations
+bashio::log.info "Launching Open-WebUI with the following configurations:"
+bashio::log.info "DATA_DIR=${DATA_DIR}"
+bashio::log.info "WEBUI_SECRET_KEY=[ommitted]"  # Mask secret key
+bashio::log.info "WEBUI_URL=${WEBUI_URL}"
+bashio::log.info "ENABLE_ADMIN_EXPORT=${ENABLE_ADMIN_EXPORT}"
+bashio::log.info "ENABLE_ADMIN_CHAT_ACCESS=${ENABLE_ADMIN_CHAT_ACCESS}"
+bashio::log.info "OFFLINE_MODE=${OFFLINE_MODE}"
 
 # Finally, run the upstream start script or command
-# Since upstream Dockerfile uses CMD ["bash", "start.sh"], 
-# we can do something like:
 exec bash /app/backend/start.sh

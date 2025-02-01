@@ -9,14 +9,14 @@ FROM ghcr.io/open-webui/open-webui:v0.5.7
 LABEL \
   io.hass.version="v0.5.7" \
   io.hass.type="addon" \
-  io.hass.arch="aarch64"
+  io.hass.arch="aarch64|amd64"
 
 # (Optional) Install bashio if you want to parse /data/options.json easily
 # For Alpine-based builds: RUN apk add --no-cache bash bashio
 # For Debian-based builds:
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl jq \
-    && curl -sL https://github.com/hassio-addons/bashio/archive/refs/tags/v0.14.3.tar.gz \
+    && curl -sL https://github.com/hassio-addons/bashio/archive/refs/tags/v0.16.2.tar.gz \
        | tar zx --strip 1 -C /tmp \
     && mv /tmp/lib /usr/lib/bashio \
     && rm -rf /var/lib/apt/lists/* /tmp/*
