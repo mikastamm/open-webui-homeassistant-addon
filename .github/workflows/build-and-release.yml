@@ -8,7 +8,7 @@ on:
         required: false
         default: ""
   schedule:
-    - cron: "0 * * * *"  # Check every hour
+    - cron: "0 0 * * *"  # Run once a day at midnight UTC
   push:
     branches:
       - main  # Adjust if your default branch is different
@@ -31,8 +31,7 @@ jobs:
           sudo apt install gh -y
 
       - name: Authenticate GitHub CLI
-        run: |
-          echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
+        run: echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
 
       - name: Get latest OpenWebUI release (or use test version)
         id: get_release
@@ -55,23 +54,23 @@ jobs:
             echo "EXISTS=false" >> $GITHUB_ENV
           fi
 
-      - name: Stop execution if release exists
-        if: env.EXISTS == 'true'
-        run: exit 0
-
       - name: Update Dockerfile with latest release version
+        if: env.EXISTS == 'false'
         run: |
           sed -i "s|FROM ghcr.io/open-webui/open-webui:.*|FROM ghcr.io/open-webui/open-webui:$LATEST_RELEASE|" open-webui/Dockerfile
           sed -i "s|io.hass.version=\".*\"|io.hass.version=\"$LATEST_RELEASE\"|" open-webui/Dockerfile
 
       - name: Update config.yaml with latest release version
+        if: env.EXISTS == 'false'
         run: |
           sed -i "s|^version: \".*\"|version: \"$LATEST_RELEASE\"|" open-webui/config.yaml
 
       - name: Log in to GitHub Container Registry
+        if: env.EXISTS == 'false'
         run: echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
+        if: env.EXISTS == 'false'
         run: |
           IMAGE_NAME="ghcr.io/mikastamm/open-webui-homeassistant-addon"
           docker build -t $IMAGE_NAME:$LATEST_RELEASE -t $IMAGE_NAME:latest -f open-webui/Dockerfile .
@@ -79,6 +78,7 @@ jobs:
           docker push $IMAGE_NAME:latest
 
       - name: Commit updated files
+        if: env.EXISTS == 'false'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
