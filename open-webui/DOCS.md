@@ -1,6 +1,6 @@
 # OpenWebUI Add-on Documentation
 
-## Installation Using HACS
+## Installation
 
 1. Go to your [Home Assistant's Addon Store](https://my.home-assistant.io/redirect/supervisor_store/)
 2. Click the three dots in the upper right and add the custom repository: `https://github.com/mikastamm/open-webui-homeassistant-addon` 
