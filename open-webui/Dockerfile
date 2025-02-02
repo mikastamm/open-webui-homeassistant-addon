@@ -29,4 +29,4 @@ RUN chmod a+x /run.sh
 EXPOSE 8080
 
 # Run the wrapper script on startup
-CMD [ "/run.sh" ]
+# CMD [ "/run.sh" ]
