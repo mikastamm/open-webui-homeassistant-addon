@@ -20,4 +20,4 @@ map:
   - share
 options: {}
 schema: {}
-image: ghcr.io/mikastamm/open-webui-hass
+image: ghcr.io/mikastamm/open-webui-homeassistant-addon
