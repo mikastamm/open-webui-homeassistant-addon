@@ -18,18 +18,6 @@ ports_description:
   8080/tcp: "Open WebUI Web Interface"
 map:
   - share
-options: 
-  webui_url: "http://homeassistant.local:8080"
-  webui_secret_key: ""
-  offline_mode: false
-  admin:
-    enable_admin_export: true
-    enable_admin_chat_actions: true
-schema: 
-  webui_url: str
-  webui_secret_key: str
-  offline_mode: bool
-  admin:
-    enable_admin_export: bool
-    enable_admin_chat_actions: bool
+options: {}
+schema: {}
 image: ghcr.io/mikastamm/open-webui-hass
