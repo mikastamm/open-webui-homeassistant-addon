@@ -14,5 +14,8 @@ LABEL \
 # By default, expose the same port
 EXPOSE 8080
 
+COPY run.sh /
+RUN chmod a+x /run.sh
+
 # Run the wrapper script on startup
 # CMD [ "/run.sh" ]
