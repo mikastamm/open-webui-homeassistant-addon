@@ -73,9 +73,14 @@ jobs:
         if: env.EXISTS == 'false'
         run: |
           IMAGE_NAME="ghcr.io/mikastamm/open-webui-homeassistant-addon"
-          docker build -t $IMAGE_NAME:$LATEST_RELEASE -t $IMAGE_NAME:latest -f open-webui/Dockerfile .
-          docker push $IMAGE_NAME:$LATEST_RELEASE
-          docker push $IMAGE_NAME:latest
+          # Create or use an existing Buildx builder instance
+          docker buildx create --use --name multiarch-builder || docker buildx use multiarch-builder
+          # Build and push for both x64 and ARM (arm64) architectures
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -t $IMAGE_NAME:$LATEST_RELEASE \
+            -t $IMAGE_NAME:latest \
+            -f open-webui/Dockerfile . --push
+  
 
       - name: Commit updated files
         if: env.EXISTS == 'false'
