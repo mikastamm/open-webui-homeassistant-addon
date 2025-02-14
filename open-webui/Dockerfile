@@ -3,19 +3,21 @@
 # the necessary Home Assistant labels and a custom startup script.
 
 ARG BUILD_FROM
-FROM ghcr.io/open-webui/open-webui:v0.5.11
+FROM ghcr.io/open-webui/open-webui:v0.5.12
 
 # Labels for Home Assistant Supervisor
 LABEL \
-  io.hass.version="v0.5.11" \
+  io.hass.version="v0.5.12" \
   io.hass.type="addon" \
   io.hass.arch="aarch64|amd64"
 
 # By default, expose the same port
 EXPOSE 8080
 
-COPY run.sh /
-RUN chmod a+x /run.sh
+ENV DATA_DIR=/data
+
+COPY run.sh .
+RUN chmod a+x run.sh
 
 # Run the wrapper script on startup
 # CMD [ "/run.sh" ]
