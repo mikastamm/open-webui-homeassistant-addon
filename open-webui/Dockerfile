@@ -16,7 +16,7 @@ EXPOSE 8080
 
 ENV DATA_DIR=/data
 
-COPY run.sh .
+COPY open-webui/run.sh .
 RUN chmod a+x run.sh
 
 # Run the wrapper script on startup
