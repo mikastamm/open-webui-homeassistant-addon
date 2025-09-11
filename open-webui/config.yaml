@@ -1,7 +1,7 @@
 name: "Open WebUI"
 description: "Open WebUI is an extensible, feature-rich, and user-friendly self-hosted AI platform designed to operate entirely offline"
 url: https://github.com/mikastamm/open-webui-homeassistant-addon
-version: "v0.6.27"
+version: "v0.6.28"
 slug: "openwebui"
 panel_icon: mdi:message
 init: false
