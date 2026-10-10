@@ -57,7 +57,6 @@ jobs:
       - name: Update Dockerfile with latest release version
         if: env.EXISTS == 'false'
         run: |
-          sed -i "s|FROM ghcr.io/open-webui/open-webui:.*|FROM ghcr.io/open-webui/open-webui:$LATEST_RELEASE|" open-webui/Dockerfile
           sed -i "s|io.hass.version=\".*\"|io.hass.version=\"$LATEST_RELEASE\"|" open-webui/Dockerfile
 
       - name: Update config.yaml with latest release version
