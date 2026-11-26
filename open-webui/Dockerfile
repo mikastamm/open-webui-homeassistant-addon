@@ -15,6 +15,8 @@ LABEL \
 EXPOSE 8080
 
 ENV DATA_DIR=/data
+# Keep the session signing key in /data so logins survive add-on restarts
+ENV WEBUI_SECRET_KEY_FILE=/data/.webui_secret_key
 
 COPY open-webui/run.sh .
 RUN chmod a+x run.sh
